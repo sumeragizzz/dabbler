@@ -1,6 +1,7 @@
 package dev.sumeragizzz.dabbler.persistence.entity;
 
 import dev.sumeragizzz.dabbler.core.constant.ReceiptType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -24,7 +25,8 @@ public class MedicalReceipt {
 
     private String medicalInstitutionName;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "ENUM('EXAMINATION', 'NURSING', 'MEDICINE', 'OTHER')")
     private ReceiptType receiptType;
 
     private BigDecimal amount;

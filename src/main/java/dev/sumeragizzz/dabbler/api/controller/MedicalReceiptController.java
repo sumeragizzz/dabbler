@@ -13,9 +13,14 @@ import java.math.BigDecimal;
 @RequestMapping("/api/v1/medical-receipt")
 public class MedicalReceiptController {
 
+    @GetMapping
+    public MedicalReceipt getMedicalReceiptAll() {
+        return new MedicalReceipt("name", "institution", ReceiptType.EXAMINATION, BigDecimal.ZERO);
+    }
+
     @GetMapping("/{medicalReceiptId}")
     public MedicalReceipt getMedicalReceiptById(@PathVariable String medicalReceiptId) {
-        return new MedicalReceipt("name", "institution", ReceiptType.診療治療, BigDecimal.ZERO);
+        return new MedicalReceipt("name", "institution", ReceiptType.EXAMINATION, BigDecimal.ZERO);
     }
 
 }
