@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Medical Receipt Confirm</title>
+</head>
+<body>
+    <form method="post" th:action="@{/web/medicalReceipt/confirm/submit}" th:object="${medicalReceipt}">
+        <button type="submit" name="execute">Execute</button>
+        <button type="submit" name="back">Back</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>item</th>
+                    <th>value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>id</td>
+                    <td><input type="text" readonly="readonly" th:field="*{id}"></input></td>
+                </tr>
+                <tr>
+                    <td>examinationDate</td>
+                    <td><input type="date" readonly="readonly" th:field="*{examinationDate}"></input></td>
+                </tr>
+                <tr>
+                    <td>examineeName</td>
+                    <td><input type="text" readonly="readonly" th:field="*{examineeName}"></input></td>
+                </tr>
+                <tr>
+                    <td>medicalInstitutionName</td>
+                    <td><input type="text" readonly="readonly" th:field="*{medicalInstitutionName}"></input></td>
+                </tr>
+                <tr>
+                    <td>receiptType</td>
+                    <td><input type="text" readonly="readonly" th:field="*{receiptType}"></input></td>
+                </tr>
+                <tr>
+                    <td>amount</td>
+                    <td><input type="number" readonly="readonly" th:field="*{amount}"></input></td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</body>
+</html>

@@ -8,8 +8,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -19,6 +19,7 @@ public class MedicalReceipt {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate examinationDate;
 
     private String examineeName;
@@ -29,7 +30,7 @@ public class MedicalReceipt {
     @Column(columnDefinition = "ENUM('EXAMINATION', 'NURSING', 'MEDICINE', 'OTHER')")
     private ReceiptType receiptType;
 
-    private BigDecimal amount;
+    private Integer amount;
 
     public MedicalReceipt() {
     }
@@ -74,11 +75,11 @@ public class MedicalReceipt {
         this.receiptType = receiptType;
     }
 
-    public BigDecimal getAmount() {
+    public Integer getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(Integer amount) {
         this.amount = amount;
     }
 

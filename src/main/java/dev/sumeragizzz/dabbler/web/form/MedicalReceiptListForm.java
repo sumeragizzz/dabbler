@@ -5,7 +5,7 @@ import java.util.List;
 
 public class MedicalReceiptListForm {
 
-    public List<Integer> getSelectedIds() {
+    public List<Long> getSelectedIds() {
         return selectedIds;
     }
 
@@ -13,10 +13,10 @@ public class MedicalReceiptListForm {
         this.selectedIds = new ArrayList<>();
     }
 
-    public void setSelectedIds(List<Integer> selectedIds) {
+    public void setSelectedIds(List<Long> selectedIds) {
         this.selectedIds = selectedIds;
     }
 
-    private List<Integer> selectedIds;
+    private List<Long> selectedIds;
 
 }

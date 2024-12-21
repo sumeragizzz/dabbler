@@ -1,5 +1,6 @@
 package dev.sumeragizzz.dabbler.web.controller;
 
+import dev.sumeragizzz.dabbler.core.constant.ReceiptType;
 import dev.sumeragizzz.dabbler.core.service.MedicalReceiptService;
 import dev.sumeragizzz.dabbler.persistence.entity.MedicalReceipt;
 import dev.sumeragizzz.dabbler.web.form.MedicalReceiptListForm;
@@ -7,11 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Controller
 public class MedicalReceiptWebController {
@@ -24,54 +27,92 @@ public class MedicalReceiptWebController {
         this.service = service;
     }
 
-    @GetMapping("/web/medicalReceipt")
-    public String showMedicalReceiptList(Model model) {
+    @GetMapping("/web/medicalReceipt/list")
+    public String showList(Model model) {
         List<MedicalReceipt> medicalReceipts = service.getMedicalReceipt();
         model.addAttribute("medicalReceipts", medicalReceipts);
 
         MedicalReceiptListForm form = new MedicalReceiptListForm();
         model.addAttribute(form);
 
-        return "medicalReceiptList";
+        return "medicalReceipt/medicalReceiptList";
     }
 
-    @PostMapping(value = "/web/medicalReceipt/edit", params = "add")
-    public String addMedicalReceipt(MedicalReceiptListForm form, BindingResult bindingResult, Model model) {
-        LOGGER.info("add. selected: {}", form.getSelectedIds());
+    @PostMapping(value = "/web/medicalReceipt/list/submit", params = "add")
+    public RedirectView add(MedicalReceiptListForm form, RedirectAttributes redirectAttributes) {
+        MedicalReceipt medicalReceipt = new MedicalReceipt();
+        redirectAttributes.addFlashAttribute("medicalReceipt", medicalReceipt);
 
-        List<MedicalReceipt> medicalReceipts = service.getMedicalReceipt();
-        model.addAttribute("medicalReceipts", medicalReceipts);
-
-        model.addAttribute("medicalReceiptListForm", form);
-
-        // TODO Forward to addition screen
-        return "medicalReceiptList";
+        return new RedirectView("/web/medicalReceipt/edit");
     }
 
-    @PostMapping(value = "/web/medicalReceipt/edit", params = "edit")
-    public String editMedicalReceipt(MedicalReceiptListForm form, BindingResult bindingResult, Model model) {
-        LOGGER.info("edit. selected: {}", form.getSelectedIds());
+    @PostMapping(value = "/web/medicalReceipt/list/submit", params = "edit")
+    public RedirectView edit(MedicalReceiptListForm form, RedirectAttributes redirectAttributes) {
+        if (form.getSelectedIds().size() != 1) {
+            throw new IllegalArgumentException();
+        }
 
-        List<MedicalReceipt> medicalReceipts = service.getMedicalReceipt();
-        model.addAttribute("medicalReceipts", medicalReceipts);
+        MedicalReceipt medicalReceipt = service.getMedicalReceipt(form.getSelectedIds().getFirst()).orElseThrow();
+        redirectAttributes.addFlashAttribute("medicalReceipt", medicalReceipt);
 
-        model.addAttribute("medicalReceiptListForm", form);
-
-        // TODO Forward to editing screen
-        return "medicalReceiptList";
+        return new RedirectView("/web/medicalReceipt/edit");
     }
 
-    @PostMapping(value = "/web/medicalReceipt/edit", params = "delete")
-    public String deleteMedicalReceipt(MedicalReceiptListForm form, BindingResult bindingResult, Model model) {
-        LOGGER.info("delete. selected: {}", form.getSelectedIds());
+    @GetMapping("/web/medicalReceipt/edit")
+    public String showEditing(MedicalReceipt medicalReceipt, Model model) {
+        model.addAttribute("receiptTypeValueList",Stream.of(ReceiptType.values()).map(Enum::name).toList());
+        model.addAttribute("medicalReceipt", medicalReceipt);
 
-        List<MedicalReceipt> medicalReceipts = service.getMedicalReceipt();
+        return "medicalReceipt/medicalReceiptEdit";
+    }
+
+    @PostMapping(value = "/web/medicalReceipt/edit/submit", params = "confirm")
+    public RedirectView confirm(MedicalReceipt medicalReceipt, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("medicalReceipt", medicalReceipt);
+
+        return new RedirectView("/web/medicalReceipt/confirm");
+    }
+
+    @PostMapping(value = "/web/medicalReceipt/edit/submit", params = "cancel")
+    public RedirectView cancel(MedicalReceipt medicalReceipt, RedirectAttributes redirectAttributes) {
+        return new RedirectView("/web/medicalReceipt/list");
+    }
+
+    @GetMapping("/web/medicalReceipt/confirm")
+    public String showConfirm(MedicalReceipt medicalReceipt, Model model) {
+        model.addAttribute("medicalReceipt", medicalReceipt);
+
+        return "medicalReceipt/medicalReceiptConfirm";
+    }
+
+    @PostMapping(value = "/web/medicalReceipt/confirm/submit", params = "execute")
+    public RedirectView execute(MedicalReceipt medicalReceipt, RedirectAttributes redirectAttributes) {
+        if (medicalReceipt.getId() == null) {
+            service.addMedicalReceipt(medicalReceipt);
+        } else {
+            service.updateMedicalReceipt(medicalReceipt);
+        }
+
+        return new RedirectView("/web/medicalReceipt/list");
+    }
+
+    @PostMapping(value = "/web/medicalReceipt/confirm/submit", params = "back")
+    public RedirectView back(MedicalReceipt medicalReceipt, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("medicalReceipt", medicalReceipt);
+
+        return new RedirectView("/web/medicalReceipt/edit");
+    }
+
+    @PostMapping(value = "/web/medicalReceipt/list/submit", params = "delete")
+    public String delete(MedicalReceiptListForm form, Model model) {
+        if (form.getSelectedIds().isEmpty()) {
+            throw new RuntimeException();
+        }
+
+        List<MedicalReceipt> medicalReceipts = service.getMedicalReceipt(form.getSelectedIds());
         model.addAttribute("medicalReceipts", medicalReceipts);
 
-        model.addAttribute("medicalReceiptListForm", form);
-
-        // TODO Forward to deletion screen
-        return "medicalReceiptList";
+        return "medicalReceiptConfirmation";
     }
 
 }

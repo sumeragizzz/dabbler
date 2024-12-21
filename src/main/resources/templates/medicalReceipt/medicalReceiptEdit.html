@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Medical Receipt Edit</title>
+</head>
+<body>
+    <form method="post" th:action="@{/web/medicalReceipt/edit/submit}" th:object="${medicalReceipt}">
+        <button type="submit" name="confirm">Confirm</button>
+        <button type="submit" name="cancel">Cancel</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>item</th>
+                    <th>value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>id</td>
+                    <td><input type="text" readonly="readonly" th:field="*{id}"></input></td>
+                </tr>
+                <tr>
+                    <td>examinationDate</td>
+                    <td><input type="date" th:field="*{examinationDate}"></input></td>
+                </tr>
+                <tr>
+                    <td>examineeName</td>
+                    <td><input type="text" th:field="*{examineeName}"></input></td>
+                </tr>
+                <tr>
+                    <td>medicalInstitutionName</td>
+                    <td><input type="text" th:field="*{medicalInstitutionName}"></input></td>
+                </tr>
+                <tr>
+                    <td>receiptType</td>
+                    <td>
+                        <select th:field="*{receiptType}">
+                            <option th:each="receiptTypeValue : ${receiptTypeValueList}" th:value="${receiptTypeValue}" th:text="${receiptTypeValue}"></option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>amount</td>
+                    <td><input type="number" th:field="*{amount}"></input></td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</body>
+</html>
