@@ -2,25 +2,25 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Medical Receipt List</title>
+    <title>Medical Receipt Confirm delete</title>
 </head>
 <body>
-    <form method="post" th:action="@{/web/medicalReceipt/list/submit}" th:object="${medicalReceiptListForm}">
-        <button type="submit" name="add">Add</button>
-        <button type="submit" name="edit">Edit</button>
-        <button type="submit" name="delete">Delete</button>
+    <form method="post" th:action="@{/web/medicalReceipt/confirmDelete/submit}" th:object="${medicalReceiptListForm}">
+        <button type="submit" name="execute">Execute</button>
+        <button type="submit" name="cancel">Cancel</button>
         <table>
             <thead>
                 <tr>
-                    <th>check</th>
                     <th>id</th>
                     <th>examineeName</th>
                 </tr>
             </thead>
             <tbody>
                 <tr th:each="medicalReceipt : ${medicalReceipts}">
-                    <td><input type="checkbox" th:field="*{selectedIds}" th:value="${medicalReceipt.id}"></input></td>
-                    <td><span th:text="${medicalReceipt.id}"></span></td>
+                    <td>
+                        <span th:text="${medicalReceipt.id}"></span>
+<!--                        <input type="hidden" th:field="*{selectedIds}"></input>-->
+                    </td>
                     <td><span th:text="${medicalReceipt.examineeName}"></span></td>
                 </tr>
             </tbody>

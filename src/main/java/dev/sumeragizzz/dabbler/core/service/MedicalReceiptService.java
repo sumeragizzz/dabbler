@@ -51,8 +51,8 @@ public class MedicalReceiptService {
         return repository.save(entity);
     }
 
-    public void deleteMedicalReceipt(Long medicalReceiptId) {
-        repository.deleteById(medicalReceiptId);
+    public void deleteMedicalReceipt(List<Long> medicalReceiptIds) {
+        repository.deleteAllById(medicalReceiptIds);
     }
 
 }

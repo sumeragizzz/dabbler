@@ -38,7 +38,7 @@ public class MedicalReceiptWebController {
         return "medicalReceipt/medicalReceiptList";
     }
 
-    @PostMapping(value = "/web/medicalReceipt/list/submit", params = "add")
+    @PostMapping(path = "/web/medicalReceipt/list/submit", params = "add")
     public RedirectView add(MedicalReceiptListForm form, RedirectAttributes redirectAttributes) {
         MedicalReceipt medicalReceipt = new MedicalReceipt();
         redirectAttributes.addFlashAttribute("medicalReceipt", medicalReceipt);
@@ -46,7 +46,7 @@ public class MedicalReceiptWebController {
         return new RedirectView("/web/medicalReceipt/edit");
     }
 
-    @PostMapping(value = "/web/medicalReceipt/list/submit", params = "edit")
+    @PostMapping(path = "/web/medicalReceipt/list/submit", params = "edit")
     public RedirectView edit(MedicalReceiptListForm form, RedirectAttributes redirectAttributes) {
         if (form.getSelectedIds().size() != 1) {
             throw new IllegalArgumentException();
@@ -60,20 +60,20 @@ public class MedicalReceiptWebController {
 
     @GetMapping("/web/medicalReceipt/edit")
     public String showEditing(MedicalReceipt medicalReceipt, Model model) {
-        model.addAttribute("receiptTypeValueList",Stream.of(ReceiptType.values()).map(Enum::name).toList());
+        model.addAttribute("receiptTypeValueList", Stream.of(ReceiptType.values()).map(Enum::name).toList());
         model.addAttribute("medicalReceipt", medicalReceipt);
 
         return "medicalReceipt/medicalReceiptEdit";
     }
 
-    @PostMapping(value = "/web/medicalReceipt/edit/submit", params = "confirm")
+    @PostMapping(path = "/web/medicalReceipt/edit/submit", params = "confirm")
     public RedirectView confirm(MedicalReceipt medicalReceipt, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("medicalReceipt", medicalReceipt);
 
         return new RedirectView("/web/medicalReceipt/confirm");
     }
 
-    @PostMapping(value = "/web/medicalReceipt/edit/submit", params = "cancel")
+    @PostMapping(path = "/web/medicalReceipt/edit/submit", params = "cancel")
     public RedirectView cancel(MedicalReceipt medicalReceipt, RedirectAttributes redirectAttributes) {
         return new RedirectView("/web/medicalReceipt/list");
     }
@@ -85,7 +85,7 @@ public class MedicalReceiptWebController {
         return "medicalReceipt/medicalReceiptConfirm";
     }
 
-    @PostMapping(value = "/web/medicalReceipt/confirm/submit", params = "execute")
+    @PostMapping(path = "/web/medicalReceipt/confirm/submit", params = "execute")
     public RedirectView execute(MedicalReceipt medicalReceipt, RedirectAttributes redirectAttributes) {
         if (medicalReceipt.getId() == null) {
             service.addMedicalReceipt(medicalReceipt);
@@ -96,23 +96,46 @@ public class MedicalReceiptWebController {
         return new RedirectView("/web/medicalReceipt/list");
     }
 
-    @PostMapping(value = "/web/medicalReceipt/confirm/submit", params = "back")
+    @PostMapping(path = "/web/medicalReceipt/confirm/submit", params = "back")
     public RedirectView back(MedicalReceipt medicalReceipt, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("medicalReceipt", medicalReceipt);
 
         return new RedirectView("/web/medicalReceipt/edit");
     }
 
-    @PostMapping(value = "/web/medicalReceipt/list/submit", params = "delete")
-    public String delete(MedicalReceiptListForm form, Model model) {
+    @PostMapping(path = "/web/medicalReceipt/list/submit", params = "delete")
+    public RedirectView delete(MedicalReceiptListForm form, RedirectAttributes redirectAttributes) {
         if (form.getSelectedIds().isEmpty()) {
             throw new RuntimeException();
         }
 
         List<MedicalReceipt> medicalReceipts = service.getMedicalReceipt(form.getSelectedIds());
+        redirectAttributes.addFlashAttribute("medicalReceipts", medicalReceipts);
+
+        return new RedirectView("/web/medicalReceipt/confirmDelete");
+    }
+
+    @GetMapping("/web/medicalReceipt/confirmDelete")
+    public String showConfirmDelete(List<MedicalReceipt> medicalReceipts, Model model) {
         model.addAttribute("medicalReceipts", medicalReceipts);
 
-        return "medicalReceiptConfirmation";
+        return "medicalReceipt/medicalReceiptConfirmDelete";
+    }
+
+    @PostMapping(path = "/web/medicalReceipt/confirmDelete/submit", params = "execute")
+    public RedirectView executeDelete(MedicalReceiptListForm form, RedirectAttributes redirectAttributes) {
+        if (form.getSelectedIds().isEmpty()) {
+            throw new RuntimeException();
+        }
+
+        service.deleteMedicalReceipt(form.getSelectedIds());
+
+        return new RedirectView("/web/medicalReceipt/list");
+    }
+
+    @PostMapping(path = "/web/medicalReceipt/confirmDelete/submit", params = "cancel")
+    public RedirectView cancelDelete(MedicalReceiptListForm form, RedirectAttributes redirectAttributes) {
+        return new RedirectView("/web/medicalReceipt/list");
     }
 
 }
