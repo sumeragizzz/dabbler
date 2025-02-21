@@ -5,7 +5,8 @@
     <title>Medical Receipt Confirm delete</title>
 </head>
 <body>
-    <form method="post" th:action="@{/web/medicalReceipt/confirmDelete/submit}" th:object="${medicalReceiptListForm}">
+    <form method="post" th:action="@{/web/medicalReceipt/confirmDelete/submit}" th:object="${medicalReceiptConfirmDeleteForm}">
+<!--    <form method="post" th:action="@{/web/medicalReceipt/confirmDelete/submit}">-->
         <button type="submit" name="execute">Execute</button>
         <button type="submit" name="cancel">Cancel</button>
         <table>
@@ -19,7 +20,8 @@
                 <tr th:each="medicalReceipt : ${medicalReceipts}">
                     <td>
                         <span th:text="${medicalReceipt.id}"></span>
-<!--                        <input type="hidden" th:field="*{selectedIds}"></input>-->
+                        <input type="hidden" th:field="*{medicalReceipt.id}"></input>
+<!--                        <input type="hidden" th:name="selectedIds" th:value="${medicalReceipt.id}"></input>-->
                     </td>
                     <td><span th:text="${medicalReceipt.examineeName}"></span></td>
                 </tr>

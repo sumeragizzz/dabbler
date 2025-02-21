@@ -3,6 +3,7 @@ package dev.sumeragizzz.dabbler.web.controller;
 import dev.sumeragizzz.dabbler.core.constant.ReceiptType;
 import dev.sumeragizzz.dabbler.core.service.MedicalReceiptService;
 import dev.sumeragizzz.dabbler.persistence.entity.MedicalReceipt;
+import dev.sumeragizzz.dabbler.web.form.MedicalReceiptConfirmDeleteForm;
 import dev.sumeragizzz.dabbler.web.form.MedicalReceiptListForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -116,25 +118,31 @@ public class MedicalReceiptWebController {
     }
 
     @GetMapping("/web/medicalReceipt/confirmDelete")
-    public String showConfirmDelete(List<MedicalReceipt> medicalReceipts, Model model) {
-        model.addAttribute("medicalReceipts", medicalReceipts);
-
+    public String showConfirmDelete(Model model) {
+        MedicalReceiptConfirmDeleteForm form = new MedicalReceiptConfirmDeleteForm();
+        model.addAttribute(form);
         return "medicalReceipt/medicalReceiptConfirmDelete";
     }
 
     @PostMapping(path = "/web/medicalReceipt/confirmDelete/submit", params = "execute")
-    public RedirectView executeDelete(MedicalReceiptListForm form, RedirectAttributes redirectAttributes) {
-        if (form.getSelectedIds().isEmpty()) {
+//    public RedirectView executeDelete(@RequestParam List<Long> selectedIds, RedirectAttributes redirectAttributes) {
+    public RedirectView executeDelete(MedicalReceiptConfirmDeleteForm form, RedirectAttributes redirectAttributes) {
+//        if (selectedIds.isEmpty()) {
+        if (form.getMedicalReceipts().isEmpty()) {
             throw new RuntimeException();
         }
 
-        service.deleteMedicalReceipt(form.getSelectedIds());
+        List<Long> selectedIds = form.getMedicalReceipts().stream()
+            .map(e -> e.getId())
+            .toList();
+        service.deleteMedicalReceipt(selectedIds);
+//        service.deleteMedicalReceipt(selectedIds);
 
         return new RedirectView("/web/medicalReceipt/list");
     }
 
     @PostMapping(path = "/web/medicalReceipt/confirmDelete/submit", params = "cancel")
-    public RedirectView cancelDelete(MedicalReceiptListForm form, RedirectAttributes redirectAttributes) {
+    public RedirectView cancelDelete(MedicalReceiptConfirmDeleteForm form, RedirectAttributes redirectAttributes) {
         return new RedirectView("/web/medicalReceipt/list");
     }
 
